@@ -1,56 +1,64 @@
-# Eating an API
+# How to consume an API
 
-APIs are consuming the world. Big data made acceesible to all. Marketplaces providing access to billions. Even on our personal projects are being split up into multiple smaller, more managable projects that share information by talking, not by memory. It's hard to imagine a world where you program has to be independently sufficient. This isn't about how APIs consume the world. This is about how we consume APIs.
-This article will not cover the how tos of OAuth, tools, or other implementation details. Those details will be specific to the particular API you are dealing with. This article aims to be something that will apply to any API you need to consume.
+> (Maybe show a messy looking hare eating an "API" spaghetti with elbows on table slurping a long noodle with two stuffy looking hare's looking disapprovingly)
 
-## No trust
+There was a time when programs were independently sufficient beings. In todays world, it's not unusual for a program to be calling out to a dozen different APIs, doing some magic, and then providing the result in it's own API. Today, the mammoth legacy enterprise programs of the past are being replaced by dozens of smaller, more manager projects that share information by talking, instead of by memory. APIs are consuming the world, but this isn't about that. This is about how we consume APIs.
+
+In this article, we'll discuss how to consume an API in a way that won't result in you being summoned by your project owners in the middle of the night twice a week. This article will not cover the how tos of OAuth, tools, or other implementation details. I hope this article will be useful not just for consuming APIs, but also for consuming spreadsheets, files over FTP, or a gmail that contains ZIPs that contain txt files with pipe delimited data.
+
+## Zero trust
 
 > "Things will go wrong in any given situation, if you give them a chance."
 > -- Murphy's law
 
-Whether you're using what you'd expect to be an extremely reliable and consistent API, or will be consuming an API from something you've personally built, you need to work with zero trust of what you'll be receiving.
-Definitely respect Murphy's law when depending on others.
+Murphy's law is often misquoted as "Anything that can go wrong, will.". The actual quote is much less dire. "Things will go wrong in any given situation, if you give them a chance.". I prefer this version of the quote because it suggests we can do something about it.
 
-Person with no name? Yep.
-Emoji in a street address? Sure.
-`&nbsp;`, `U+0009` and those question mark squares. Oh yeah.
-Is Guam a state or a country? Why not both?
-That currency type field being CAD instead of USD? You betcha.
-Invisible control characters copied from a PDF that cause your entire application to explode? Inevitable.
+Whether you're using what you'd expect to be an extremely reliable and consistent API, or will be consuming an API you've personally built, you need to work with zero trust of what you'll be receiving.
+APIs are all about depending on someone elses data, from someone else code, from someone elses server, and someone elses network.
+When this many things are out of your control, you need to have a healthy respect for Murphy's Law.
 
-There are too many examples of craziness to list here. The key take away is to not make any assumptions. Even the most basic things such as getting a formatted response at all.
-An excellent resource for understanding the different kinds of crazy is the big list of naughty strings.
-https://github.com/minimaxir/big-list-of-naughty-strings
-Each kind of crazy reuires it's own way of handling. Sometimes you'll strip out the crazy, sometimes you'll correct to what it's suppose to be, and sometimes you need to fail.
+* A person with seemingly no name? Yep.
+* Emoji in a street address? Sure.
+* `&nbsp;`, `U+0009` and those question mark squares? Oh yeah.
+* Does this API consider Guam a state or a country? Why not both?
+* That currency type field that should always be USD coming in as CAD? You betcha.
+* Invisible control characters copied from a PDF that cause you hours of debugging? Consider it inevitable.
 
-## Throttling
+These are just a _small_ sample of my API war stories. You need to expect the unexpected starting from the first lines of code you write. Each kind of crazy requires different handling. You might want to strip out control characters, `&nbsp`; should be converted to space, unexpected currency types might need to trigger an alert, and a dirty if statement or elegant look up table might be needed for when Guam is sent in as a country. An excellent resource for planning for and testing against certain sorts of insanity is [The Big List Of Naughty Strings](https://github.com/minimaxir/big-list-of-naughty-strings). This list focuses on UTF strangeness and malicious injections. You might want to make a list of other unexpected values you might expect.
 
-Some APIs will use simple throttling concepts such as 10,000 a day. Other will use more complex throttling concepts such as buckets. An example of a throttling bucket would be when you are allowed 10 requests, with a refill rate of 1 a minute. That means you can use 10 at once, and then have to wait 10 minutes, or use 1 a minute. I always recommend running well below the throttling limit is possible. You may need to reply requests to do debugging and thorttling cushion is required for that. You should also design your app so if it does hit a thorttling limit, it recovers gracefully.
-I have found that some of the more popular APIs have higher rates of failure at the top of the hour. I assume this is because almost everybody builds their crontab to hit at the top of the hour. Whether it's `0 * * * *`, `0,30 * * * *`, `0/15 * * * *`, or `0 0 * * *`. Top of the hour is a peak minute for any API. Because of this, I recommend avoding rush minute by setting your cron to run at more off peak times, such as `11 * * * *`.
-Error alerting
-Catching issues and logging them is the easy part. Deciding how to be actively and effectively alerted of which issues are more difficult. I've had some APIs chug along without even a single minor error for months. I've had other APIs receive every HTTP status code there is in the same time span. Understanding which errors your software will gracefully recover from on it's own, and which require immediate attention is difficult to know before hand. That's going to be specific to the API and your implementation. When you do have an idea of severity and a way to filter them, you'll need a alert system. Email is definitely the most popular option, and for good reason, as it's simple and when set up correctly, works great. Some may prefer a text message system for things that require more immediate attention, or even a centralized dashboard that is actively monitored for larger teams. I do advise that you only report on errors that require manual action from the recipitent. If you most of the alerts you receive don't require you to do anything, it becomes easy to become complacient.
+## Set Up
 
-If we really want to know if the system is working, we can do better than trying to understand and parse the generated errors. I recommend building a script that watches your system from the outside. Test what working means for your system, whatever thay may be. Are you expecting a database table to continue growing. Keep an eye on it and make sure it does. Are you sending requests to change the status of an order. Do an API call a few minutes afterwards and check that the system processed your request.
+The very first step when using an API is to look for an official or unofficial SDK for the API you'll be using. SDKs do more than take care of HTTP boiler plate. They provide a simplier interface that requires less knowledge of the quirkier parts of the API, and often provide great error handling specific to the API. If there are no SDKs, there are still general purpose API libraries such as [Guzzle](http://docs.guzzlephp.org/en/stable/).
 
-## Request Logging
+Most APIs provide a public key, private key, and sometimes other bits of other information that need to be plugged into a request. The lingo used is often different, but the concepts are the same. I recommend against hard coding this into your application. A configuration file will be much better. It makes updates easier and helps you keep the keys out of the repo for open source projects. Better still, is using Environment Variables, which provide a higher level of security.
 
-I recommend you log every HTTP request you send and every HTTP response you receive. This will be important for when the API is broken and you need to prove it to the API developers. An API developer receiving a complaint that the API isn't working begins with the assumption that the user is doing something wrong (because they probably are). Don't show or so much as mention your code to them. Keep the discussion focused on HTTP. Provide the HTTP request sent, the HTTP response received, and explain why the API is not behaving as documented.
+Most APIs have throttling limits. Some will be simple, such as 10,000 a day. Others will be less so, such as a quota of 10 and a restore rate of 1 a minute. I recommend using an API as little as possible. Not only to be kind to the people providing the API, but also to give you a cushion for replaying your requests to debug problems. Even so, you should also design your code to recover gracefully for when it does hit against the throttling limit.
 
-## Testing
-Testing is important to ensure you are generating the same requests, and still correctly handling responses correctly. A happy path mock test for the happy path can be useful to ensure you're not breaking anything while working. More important, I think, is sad path testing. I recommend writing a test to trigger throttling limits, writing a test to simulate a different fail responses, a test to simulate no response at all. I also recommend using the big list of naughty strings and passing each one through each field and seeing if your application is handling it in the expected way.
+I have found that some APIs have higher rates of failure at the top of the hour. I assume this is because people tend to set up very simple CRONs, such as `0 * * * *`, `0,30 * * * *`, `0/15 * * * *`, or `0 0 * * *`, all of which align at the 0th minute. The top of the hour is rush hour, ern, minute, for any API. Because of this, I recommend avoding it by setting your CRONs to run at more off peak times. Using odd numbers such as in `11 * * * *` work excelently, at least as long as everybody doesn't take this advice.
 
-However, it takes two to tango. You should not only test your code, but also test the API itself. Contract Testing is a test where you send a particular request, and check that the response you receive the expected response.
-This is useful not only for checking if their API is outright broken, but also listening for more subtle changes, such as new fields made available.
+## Monitoring
 
-## Documentation
-Well written API documentation is a rare thing. Sometimes the API leaves signifigant information out. Sometimes it provides information overload. Sometimes it is out of date. Honestly, I take all the above if the API provides clear concrete examples of how to use the API. Documentation for the SDK is often more useful than the documentation for the API itself.
-Backwards compatibility for APIs are not respected as much as it should be. Even if it were, keeping up with new features has allowed me to signifigantly refactor my code in the past.
-It can be useful to find an official or unofficial forum dedicated to discussion of a particular API. Even if the community is only a handful of people, it will be incredibly useful so you can know if anybody else is having issues with an API as well.
-I also recommend using Down Detector. I've found spikes in issues reporting correlate extremely well with errors I receive in my app, and helps give me peace of mind that I'm not alone.
+I highly recommend you log every HTTP request you send and every HTTP response you receive. In addition to being essential for debugging unexpected responses, this will be important for when the API is broken, understanding why it is broken, and proving it to the developers of the API. When an API developer receies a complaint that their API isn't working, they begin with the assumption that you are doing something wrong (because you probably are). Don't show or mention your code to them. Keep the discussion focused on HTTP. Provide the HTTP request sent, the HTTP response received, and explain why the API is not behaving as documented.
 
-> Author:"foobar" Hare
+Catching issues and logging them is the easy part. Deciding how to be actively and effectively be alerted of which issues are more difficult. I've had some APIs chug along without even a single minor error for months. I've had other APIs receive every HTTP status code there is in the same time span. Understanding which errors your software will gracefully recover from on it's own, and which require immediate attention is difficult to know before hand. That's going to be specific to the API and your implementation. When you do have an idea of severity and a way to filter them, you'll need a alert system. Email is definitely the most popular option, and for good reason. It's simple and when set up correctly works great. Some may prefer a text message system for things that require more immediate attention, or even a centralized dashboard that is actively monitored for larger teams. I do advise that you only report on errors that require manual action from the recipitent. If you most of the alerts you receive don't require you to do anything, it becomes easy to become complacent.
+
+But if we really want to know if the system is working, we can do better than trying to understand and parse the generated errors. I recommend building a script that watches your system from the outside. Test what "working" means for your system, whatever thay may be. Are you expecting a database table to receive new rows. Keep an eye on it and make sure it does. Are you sending requests to change the status of an order. Do an API call a few minutes afterwards and check that the API has actually processed your request.
+
+In addition to the usual suspects of unit testing, intergration testing, and mock testing (of which I highly recommend you make use of [The Big List Of Naughty Strings](https://github.com/minimaxir/big-list-of-naughty-strings) mentioned above), I recommend you consider using contract testing. Where the previously mentioned tests test your code, a contract test tests the API itself. This is useful not only for checking if their API is outright broken, but also listening for more subtle changes, such as new fields made available.
+
+I also recommend making use of a service like Down Detector (https://downdetector.com/). I've found spikes in issues reported for a service correlate extremely closely with issues I have with the API, and helps give me peace of mind that I'm not alone.
+
+Perhaps the single most important peice of advice, if it applies, is to find an official (or unofficial) forum dedicated to the discussion of the API. Even if the community is only a handful of people, it will be incredibly useful so you can know if anybody else is having issues with an API as well, or common workarounds the known bugs or quirks. It is also a good idea to keep an eye out for announcements for changes, depreciations, or new additions to the API.
+
+## In Conclusion
+
+Building and forgetting is rarely an option when depending on an API. You'll need a robust system that works on zero trust, listens for and reacts to issues, and active monitoring and diligence. It might be a lot of work, but just remember, it's easier than creating a successful social network, building a video library of petabytes, or mapping the world.
+
+> Author:"Tidy" Hare
 > Species:H.A.R.E. (as "Hairless And Ranting Engineer")
-> Job Title:foobar
-> Hobbies:foobar
+> Job Title:Organized Web Developer
+> Hobbies:Moving brackets to new lines, then back again
 
-"foobar" Hare...
+"Tidy" Hare is a Web Developer than likes things to be a certain way. He just hasn't figured out what that certain way is yet, but he'll know when he sees it. Dispite his continual search for perfection, he is incredibly pragmatic, especially when he's short on time.
+
+He's always been interested in sharing his opinions on the topics he's passionate about, but worries he'll be outraged by his own musing in 6 months time.
