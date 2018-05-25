@@ -4,7 +4,7 @@ Programs are not the self-contained, self-reliant, self-sufficient things they o
 
 Even the self contained programs of the past are being refactored by the younger generation into several smaller code bases that share data by talking, not by memory. Instead of figuring out the age old question of how to architect a large yet maintainable and extendable code base, developers are avoiding the issue all together by keeping their code base as small as possible. Yes, APIs are consuming the world, but this isn't about that. This is about how we consume APIs.
 
-In this article, we'll discuss how to consume an API in a way that won't result in you being summoned in the middle of the night twice a week. This article will not cover the how-to of OAuth, or other implementation details. I hope this article will be useful not just for consuming APIs, but also for consuming spreadsheets, files over FTP, or a gmail that contains ZIPs that contain txt files with pipe delimited data.
+In this article, we'll discuss how to consume an API in the most robust way possible, so you won't be summoned by your boss in the middle of the night, or return to your personal project website to find that it's been down for months. This article will not cover the how-to of OAuth, or other implementation details. I hope this article will be useful not just for consuming APIs, but also for consuming spreadsheets, files over FTP, or a gmail that contains ZIPs that contain txt files with pipe delimited data.
 
 ## The Set Up
 
