@@ -4,13 +4,13 @@ Programs are not the self-contained, self-reliant, self-sufficient things they o
 
 Even the self contained programs of the past are being refactored by the younger generation into several smaller code bases that share data by talking, not by memory. Instead of figuring out the age old question of how to architect a large yet maintainable and extendable code base, developers are avoiding the issue all together by keeping their code base as small as possible. Yes, APIs are consuming the world, but this isn't about that. This is about how we consume APIs.
 
-In this article, we'll discuss how to consume an API in the most robust way possible, so you won't be summoned by your boss in the middle of the night, or return to your personal project website to find that it's been down for months. This article will not cover the how-to of OAuth, or other implementation details. I hope this article will be useful not just for consuming APIs, but also for consuming spreadsheets, files over FTP, or a gmail that contains ZIPs that contain txt files with pipe delimited data.
+In this article, we'll discuss how to consume an API in the most robust way possible, so you won't be summoned by your boss in the middle of the night, or return to your personal project website to find that it's been down for months. This article will not cover the how-to of OAuth, or other implementation details. I hope much of this article will be useful not just for consuming APIs, but also for consuming spreadsheets, files over FTP, or a gmail that contains ZIPs that contain txt files with pipe delimited data.
 
 ## The Set Up
 
 The very first step when using an API is to look for an official (or unofficial) SDK for the API you'll be using. SDKs do more than take care of HTTP boiler plate. They provide a simplier interface that requires less knowledge of the quirkier parts of the API, and often provide great error handling specific to the API. If there are no SDKs, there are still general purpose API libraries such as [Guzzle](http://docs.guzzlephp.org/en/stable/) that can make the job easier.
 
-Most APIs provide a public key, private key, and sometimes other bits of other information that need to be plugged into a request. I recommend against hard coding this into your application. A configuration file, or better yet Environment Variables, will make updating the keys easier and can help keep the keys out of the code repo for open source projects.
+Most APIs provide a public key, private key, and sometimes other bits of other information that need to be plugged into a request. I recommend against hard coding this into your application. A configuration file or environment variables will make updating the keys easier and can help keep the keys out of the code repo for open source projects.
 
 Most APIs have throttling limits. Some will be simple, such as 10,000 a day. Others will use bucket like concepts, such as a quota of 10 and a restore rate of 1 a minute. Whatever the throttle limits, use the API as little as you can get away with. This is not only to be kind to the people providing the API, but also to give you a cushion for replaying your requests to debug problems. Even if you don't expect your API to ever hit the throttling limits, design your code to gracefully recover for when it find a way to hit the throttling limits anyways.
 
@@ -29,8 +29,8 @@ Whether you're using what you'd expect to be an extremely reliable and consisten
 * Emoji in a street address? Sure.
 * `&nbsp;`, `U+0009`, and mojibake? Oh yeah.
 * Does this API consider Guam a state or a country? Why not both?
-* That currency type field that should always be USD coming in as CAD? You betcha.
-* Invisible control characters copied from a PDF that cause you hours of debugging? It's practically inevitable.
+* That currency type field that should always be USD coming in as CAD? Of course.
+* Invisible control characters copied from a PDF that cause you hours of debugging? You betcha.
 
 These are just a _small_ sample of real situations I've dealt with. Every piece of data should be treated with a high level of skepticism. When an unexpected response is received, you'll need to be prepared to take the appropriate action. `&nbsp`; might need to be converted to space, control characters might need to be stripped out completely, unexpected currency types might need to trigger an alert, and a dirty if statement (or an elegant look up table) might be needed for when Guam is sent in as a country.
 
