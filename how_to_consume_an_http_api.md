@@ -1,4 +1,4 @@
-# How to consume an API
+# How to consume an HTTP API
 
 Programs are not the self-contained, self-reliant, self-sufficient things they once were. In today's world, it's not considered unusual for a program to call a dozen different APIs, do it's thing with the data, and then provide the result, perhaps with it's own API. It's not just the users of the web that's connected, but now the websites themselves.
 
@@ -38,7 +38,7 @@ An excellent resource for planning for and testing against certain sorts of insa
 
 ## Monitoring
 
-I highly recommend you log every HTTP request you send and every HTTP response you receive. In addition to being essential for debugging unexpected responses, this will be important for when the API is broken, understanding why it is broken, and proving it to the developers of the API. When an API developer receives a complaint that their API isn't working, they begin with the assumption that you are doing something wrong (because you probably are). Don't show or mention your code to them. Keep the discussion focused on HTTP. Provide the HTTP request sent, the HTTP response received, and explain why the API is not behaving as documented.
+I highly recommend you log every HTTP request you send and every HTTP response you receive. In addition to being essential for debugging unexpected responses, this will be important for when the API is broken, understanding why it is broken, and proving it to the developers of the API. When an API developer receives a complaint that their API isn't working, they begin with the assumption that you are doing something wrong (because you probably are). Don't show or mention your code to them. Keep the discussion focused on HTTP. Provide the HTTP request sent, the HTTP response received, and explain why the API is not behaving as documented. This same process should also be applied to anybody affected by an API issue such as clients, management, or 3rd parties.
 
     When an API developer receives a complaint that their API isn't working, they begin with the assumption that you are doing something wrong (because you probably are)
 
@@ -54,7 +54,7 @@ Perhaps the single most important piece of advice, is to find an official (or un
 
 ## In Conclusion
 
-Building something until it works and forgetting about it is rarely an option when depending on an API. You'll need a robust system that works on zero trust, the ability to listen for and react to issues, and active monitoring and diligence. It might be work, but I promise you it's less work than acquiring a billion users, building a video library of petabytes, or mapping the earth.
+Building something until it works and forgetting about it is rarely an option when depending on an API. You'll need a robust system that works on zero trust, comprehensive logging, the ability to listen for, and react to issues, and active monitoring and diligence. It might be work, but I promise you it's less work than acquiring a billion users, building a video library of petabytes, or mapping the earth.
 
 ## Picture Idea
 
