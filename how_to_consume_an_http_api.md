@@ -1,5 +1,7 @@
 # How to consume an HTTP API
 
+[http://ithare.com/how-to-consume-an-http-api/](http://ithare.com/how-to-consume-an-http-api/)
+
 Programs are not the self-contained, self-reliant, self-sufficient things they once were. In today's world, it's not considered unusual for a program to call a dozen different APIs, do it's thing with the data, and then provide the result, perhaps with it's own API. It's not just the users of the web that's connected, but now the websites themselves.
 
 Even the self contained programs of the past are being refactored by the younger generation into several smaller code bases that share data by talking, not by memory. Instead of figuring out the age old question of how to architect a large yet maintainable and extendable code base, developers are avoiding the issue all together by keeping their code base as small as possible. Yes, APIs are consuming the world, but this isn't about that. This is about how we consume APIs.
