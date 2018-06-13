@@ -58,15 +58,10 @@ Perhaps the single most important piece of advice, is to find an official (or un
 
 Building something until it works and forgetting about it is rarely an option when depending on an API. You'll need a robust system that works on zero trust, comprehensive logging, the ability to listen for, and react to issues, and active monitoring and diligence. It might be work, but I promise you it's less work than acquiring a billion users, building a video library of petabytes, or mapping the earth.
 
-## Picture Idea
+## Afterword by 'No Bugs'
 
-For the picture, maybe a messy looking hare eating an "API" spaghetti, elbows on table, slurping a long noodle, with two stuffy looking hare's looking on disapprovingly
+Usually, all the guest posts come with an implicit disclaimer that “opinion of the author may not represent the opinion of the editor”, but this post is a special case: I DO agree with 99% of the things written by 'Goose' Hare above (leaving remaining 1% to something-which-I-didn't-notice-yet 😉 ).
 
-## Author Info
+Moreover, I can say that “log every HTTP request you send and every HTTP response you receive” is indeed THE requirement for any serious use of a 3rd-party API (in particular, for ANYTHING involving payment processors and/or other financial transactions), with main value of the logging being “proving [that API is broken] to the developers of the API” (or to understand that it were we who broke the contract). I cannot say how many times presenting detailed log with explanations like “then, at 15:03:24, we sent back to you such-and-such response, according to your doc paragraph 1.2.3.4, and received back such-and-such-reply, which according to 5.6.7.8, means that transaction is successful”, have closed the discussion with developers of (buggy) 3rd-party API for good.
 
-    Author:"Goose" Hare
-    Species:H.A.R.E. (as "Hairless And Ranting Engineer")
-    Job Title:Indecisive Web Developer
-    Hobbies:Moving brackets to new lines, then back again
-
-'Goose' Hare is a Web Developer than likes things to be a certain way. He just hasn't figured out what that certain way is yet, but he'll know when he sees it. Despite his continual search for perfection, he is incredibly pragmatic, especially when he's short on time. While most of his opinions change frequently, he'd like to share some of his more enduring observations.
+Just a word of caution – when dealing with credit card transactions, due to PCI DSS you SHOULD mask CC numbers (and maybe CVCs) in your logs; OTOH, while it is a headache, these things VERY rarely cause trouble (usually it is recovery from transactions in “unknown state” which is the most problematic; I hope that 'Goose' will be able to cover this subject some time in the future 🙂 ).
